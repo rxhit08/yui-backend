@@ -8,13 +8,22 @@ dotenv.config();
 
 const server = createServer(app);
 
+const allowedOrigins = process.env.CORS.split(",");
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.CORS,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS in Socket.IO"));
+      }
+    },
     methods: ['GET', 'POST'],
     credentials: true,
   },
 });
+
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
