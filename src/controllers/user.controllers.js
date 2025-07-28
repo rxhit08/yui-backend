@@ -45,15 +45,21 @@ const registerUser = asyncHandler(async (req, res, next) => {
 
     if (req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0) 
     {
-        avatarLocalPath = req.files?.avatar[0]?.path;
+        avatarLocalPath = req.files?.avatar[0]
+
     }
 
     if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
-        coverImageLocalPath = req.files?.coverImage[0]?.path;
+        coverImageLocalPath = req.files?.coverImage[0]
     }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+    const avatar = avatarLocalPath
+    ? await uploadOnCloudinary(avatarLocalPath.buffer, avatarLocalPath.originalname)
+    : null;
+    const coverImage = coverImageLocalPath
+    ? await uploadOnCloudinary(coverImageLocalPath.buffer, coverImageLocalPath.originalname)
+    : null;
+
 
 
     const user = await User.create({

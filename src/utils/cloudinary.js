@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
+import { DataUriParser } from 'datauri/parser.js';
+import path from 'path';
 
 cloudinary.config({ 
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
@@ -7,26 +8,25 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
-    try {
-        if (!localFilePath) return null;
+const parser = new DataUriParser();
 
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto",
-        });
+const uploadOnCloudinary = async (fileBuffer, originalName) => {
+  try {
+    if (!fileBuffer || !originalName) return null;
 
-        console.log("File is uploaded to cloudinary", response.url);
-        fs.unlinkSync(localFilePath);
-        return response;
-    } catch (error) {
-        console.error("Cloudinary Upload Error:", error);
+    const extName = path.extname(originalName).toString();
+    const dataUri = parser.format(extName, fileBuffer);
 
-        if (fs.existsSync(localFilePath)) {
-            fs.unlinkSync(localFilePath);
-        }
+    const response = await cloudinary.uploader.upload(dataUri.content, {
+      resource_type: "auto",
+    });
 
-        return null;
-    }
+    console.log("File uploaded to Cloudinary:", response.secure_url);
+    return response;
+  } catch (error) {
+    console.error("Cloudinary Upload Error:", error);
+    return null;
+  }
 };
 
 export { uploadOnCloudinary };
