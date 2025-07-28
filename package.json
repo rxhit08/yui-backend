@@ -21,8 +21,5 @@
     "multer": "^2.0.1",
     "socket.io": "^4.8.1",
     "nodemon": "^3.1.10"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
   }
 }
