@@ -1,8 +1,6 @@
 import mongoose, {Schema} from 'mongoose'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { asyncHandler } from '../utils/AsyncHandler.js'
-import { ApiError } from '../utils/ApiError.js'
 
 const userSchema = new Schema(
     {
