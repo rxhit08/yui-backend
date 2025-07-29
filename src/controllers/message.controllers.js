@@ -15,14 +15,16 @@ const sendMessages = asyncHandler(async(req, res) => {
     let imagePath
 
     if (req.files && Array.isArray(req.files.image) && req.files.image.length > 0) {
-        imagePath = req.files?.image[0]?.path
+        imagePath = req.files?.image[0]
     }
 
     if (!text && !imagePath) {
         throw new ApiError(404, "Either text or image is required")
     }
 
-    const image = await uploadOnCloudinary(imagePath)
+    const image = imagePath
+    ? await uploadOnCloudinary(imagePath.buffer, imagePath.originalname)
+    : null;
 
     const receiver = await User.findOne({ userName: receiverUserName }).select("_id")
 

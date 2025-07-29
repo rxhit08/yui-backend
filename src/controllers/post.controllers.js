@@ -15,14 +15,16 @@ const createPost = asyncHandler(async(req, res) => {
     let imagePath;
 
     if(req.files && Array.isArray(req.files.image) && req.files.image.length > 0) {
-        imagePath = req.files?.image[0]?.path
+        imagePath = req.files?.image[0]
     }
 
     if (!caption && !imagePath) {
         throw new ApiError(404, "Either caption or image is required")
     }
 
-    const image = await uploadOnCloudinary(imagePath)
+    const image = imagePath
+    ? await uploadOnCloudinary(imagePath.buffer, imagePath.originalname)
+    : null;
 
     const post = await Post.create({
         user: userId,
